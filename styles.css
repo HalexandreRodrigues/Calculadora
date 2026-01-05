@@ -1,0 +1,129 @@
+/* Layout geral */
+* , *::before, *::after { box-sizing: border-box; }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #000;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+} 
+/* Caixa da calculadora */
+.calculator {
+    width: 280px;
+    max-width: 92vw;
+    background: linear-gradient(180deg, #141414 0%, #1b1b1b 100%);
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Visor */
+.display-wrapper { display: flex; flex-direction: column; gap: 6px; }
+.display {
+    position: relative;
+    background: #1f1f1f;
+@@ -44,6 +45,16 @@ body {
+    text-overflow: clip;
+}
+
+.feature-indicator {
+    height: 18px;
+    font-size: 0.72rem;
+    color: #bfbfbf;
+    text-align: right;
+    padding-right: 6px;
+}
+
+.feature-indicator.on { color: #f6b21a; font-weight: 700; }
+
+/* Fade indicador à esquerda quando houver overflow */
+.display::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 36px; /* largura do fade */
+    pointer-events: none;
+    background: linear-gradient(90deg, #1f1f1f 0%, rgba(31,31,31,0) 100%);
+    opacity: 0;
+    transition: opacity .18s ease;
+}
+.display.has-overflow::before { opacity: 1; } 
+/* Grade de botões: 4 colunas, linhas mais compactas */
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px; /* gap reduzido para compactar */
+    margin-top: 10px;
+    /* altura das linhas reduzida para tornar os botões menores */
+    grid-auto-rows: minmax(34px, 1fr);
+}
+/* Botões padrão (círculos) - compactos */
+.btn {
+    background: #2f2f2f;
+    color: #fff;
+    border: none;
+    width: 100%;
+    height: 100%;
+    min-width: 0; /* evita overflow de conteúdo */
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    font-size: 1.00rem; /* tamanho base para ícones/labels menores */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .05s ease;
+}
+.btn:active { transform: translateY(0.4px); }
+/* ponto e zero também devem ter números legíveis */
+.btn.zero, .btn[data-action="decimal"] {
+    font-size: 0.95rem;
+}  
+/* Botões operacionais (maiores) */
+.btn[data-action="operator"] {
+    background: linear-gradient(180deg,#f6b21a,#f1a816);
+    color: #111;
+    font-weight: 800;
+    font-size: 1.2rem; /* operadores maiores para legibilidade */
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+/* Botão '=' (mesmo tamanho dos outros) */
+.btn.equal {
+    background: linear-gradient(180deg,#f6b21a,#f1a816);
+    color: #111;
+    font-weight: 800;
+    font-size: 1.2rem; /* manter similar aos operadores */
+    border-radius: 50%;
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,0.08);
+} 
+/* Botões claros (C / % / backspace) */
+.btn[data-action="clear"], .btn[data-action="backspace"], .btn[data-action="percent"] {
+    background: #f5f5f5;
+    color: #111;
+    box-shadow: none;
+}
+/* Botão zero ocupa duas colunas (formato pílula) */
+.btn.zero {
+    grid-column: span 2;
+    aspect-ratio: 2 / 1;
+    border-radius: 40px;
+    justify-self: stretch;
+    height: 100%;
+}
+/* Ajustes finos */
+/* '=' usa tamanho padrão agora */
+.btn:focus { outline: none; }
+/* Responsividade */
+@media (max-width: 360px) {
+    .calculator { width: 92vw; padding: 14px; }
+    .display { font-size: 1.6rem; min-height: 60px; }
+}
