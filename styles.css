@@ -26,7 +26,32 @@ body {
 .display {
     position: relative;
     background: #1f1f1f;
-@@ -44,6 +45,16 @@ body {
+
+    
+        
+          
+    
+
+        
+        Expand All
+    
+    @@ -44,6 +45,16 @@ body {
+  
+    color: #ffffff;
+    font-size: 1.35rem; /* maior para melhor leitura */
+    padding: 8px 12px;
+    text-align: right;
+    border-radius: 10px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    letter-spacing: 0.3px;
+    width: 100%;
+    min-width: 0; /* permite o conteúdo ser cortado dentro do flex */
+    white-space: nowrap; /* não quebrar linhas */
+    overflow: hidden; /* ocultar começo do número quando for maior que a área */
     text-overflow: clip;
 }
 
@@ -43,6 +68,17 @@ body {
 /* Fade indicador à esquerda quando houver overflow */
 .display::before {
     content: '';
+
+    
+          
+            
+    
+
+          
+          Expand Down
+    
+    
+  
     position: absolute;
     left: 0;
     top: 0;
