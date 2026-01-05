@@ -5,10 +5,32 @@ let waitingForSecond = false;
 let secondValue = ''; // string for building the second operand
 let justComputed = false; // when true, typing a number should replace the display (start new input)
 
+let FEATURES = {};
+
 function updateDisplay(text) {
   display.textContent = String(text);
   // detect overflow and toggle fade indicator
   checkOverflow();
+}
+
+// load config.json to set feature flags (if present)
+fetch('config.json').then(r => r.json()).then(cfg => {
+  FEATURES = cfg.features || {};
+  updateFeatureIndicator();
+}).catch(() => {
+  // no config found — FEATURES remains {}
+});
+
+function updateFeatureIndicator() {
+  const el = document.getElementById('feature-indicator');
+  if (!el) return;
+  if (FEATURES && FEATURES.claude_haiku_4_5) {
+    el.textContent = 'Claude Haiku 4.5: ON';
+    el.classList.add('on');
+  } else {
+    el.textContent = '';
+    el.classList.remove('on');
+  }
 }
 
 function checkOverflow() {
