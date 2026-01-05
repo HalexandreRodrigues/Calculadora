@@ -23,6 +23,7 @@ body {
 }
 
 /* Visor */
+.display-wrapper { display: flex; flex-direction: column; gap: 6px; }
 .display {
     position: relative;
     background: #1f1f1f;
@@ -43,6 +44,16 @@ body {
     overflow: hidden; /* ocultar começo do número quando for maior que a área */
     text-overflow: clip;
 }
+
+.feature-indicator {
+    height: 18px;
+    font-size: 0.72rem;
+    color: #bfbfbf;
+    text-align: right;
+    padding-right: 6px;
+}
+
+.feature-indicator.on { color: #f6b21a; font-weight: 700; }
 
 /* Fade indicador à esquerda quando houver overflow */
 .display::before {
