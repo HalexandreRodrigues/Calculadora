@@ -36,6 +36,17 @@ function updateFeatureIndicator() {
 function checkOverflow() {
   // if content wider than visible area, show fade at left
   if (display.scrollWidth > display.clientWidth + 2) display.classList.add('has-overflow');
+
+    
+          
+            
+    
+
+          
+          Expand Down
+    
+    
+  
   else display.classList.remove('has-overflow');
 }
 // update on resize as well
