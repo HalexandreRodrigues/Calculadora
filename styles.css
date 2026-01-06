@@ -60,8 +60,6 @@ body {
     display: none;
 }
 
-}
-
 .feature-indicator.on { color: #e91e63; font-weight: 700; }
 
 /* Fade indicador à esquerda quando houver overflow */
