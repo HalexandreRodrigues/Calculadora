@@ -1,184 +1,141 @@
 const display = document.getElementById('display');
+const historyContainer = document.getElementById('history-container');
 let firstValue = null;
 let operator = null;
 let waitingForSecond = false;
 let secondValue = ''; 
 let justComputed = false;
+let historyList = [];
 
-let FEATURES = {};
-
-// Auxiliar para formatar números nulos ou indefinidos
-function formatNum(n) {
-  if (n === null || n === undefined) return '';
-  return parseFloat(Number(n).toFixed(10)).toString();
+// Formata visualmente: 1000.5 -> 1.000,5
+function formatVisual(numStr) {
+    if (numStr === 'Erro' || numStr === '0') return numStr;
+    if (!numStr) return '';
+    const hasPercent = numStr.includes('%');
+    const cleanNum = numStr.replace('%', '');
+    const parts = cleanNum.split('.');
+    let formattedInt = new Intl.NumberFormat('pt-BR').format(parts[0]);
+    let result = parts.length > 1 ? formattedInt + ',' + parts[1] : formattedInt;
+    return hasPercent ? result + '%' : result;
 }
 
 function updateDisplay(text) {
-  display.textContent = String(text);
-  checkOverflow();
+    display.textContent = formatVisual(String(text));
 }
 
-// Config e Feature Flags
-fetch('config.json')
-  .then(r => r.json())
-  .then(cfg => {
-    FEATURES = cfg.features || {};
-    updateFeatureIndicator();
-  })
-  .catch(() => {});
-
-function updateFeatureIndicator() {
-  const el = document.getElementById('feature-indicator');
-  if (!el) return;
-  if (FEATURES && FEATURES.claude_haiku_4_5) {
-    el.textContent = 'Claude Haiku 4.5: ON';
-    el.classList.add('on');
-  } else {
-    el.textContent = '';
-    el.classList.remove('on');
-  }
+function updateHistoryUI() {
+    if (historyList.length > 6) historyList.shift();
+    historyContainer.innerHTML = '';
+    historyList.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.textContent = item.split(' ').map(term => {
+            return (isNaN(term.replace(',', '.')) || term === '') ? term : formatVisual(term);
+        }).join(' ');
+        historyContainer.appendChild(div);
+    });
 }
-
-function checkOverflow() {
-  if (display.scrollWidth > display.clientWidth + 2) {
-    display.classList.add('has-overflow');
-  } else {
-    display.classList.remove('has-overflow');
-  }
-}
-
-window.addEventListener('resize', checkOverflow);
 
 function inputNumber(num) {
-  if (justComputed && operator === null) {
-    updateDisplay(num);
-    justComputed = false;
-    return;
-  }
-
-  if (operator !== null) {
-    if (waitingForSecond) {
-      secondValue = num;
-      waitingForSecond = false;
-    } else {
-      secondValue = (secondValue === '0') ? num : secondValue + num;
+    if (operator !== null) {
+        if (waitingForSecond) {
+            secondValue = num;
+            waitingForSecond = false;
+        } else {
+            secondValue = (secondValue === '0') ? num : secondValue + num;
+        }
+        updateDisplay(secondValue);
+        return;
     }
-    updateDisplay(`${formatNum(firstValue)} ${operator} ${secondValue}`);
-    return;
-  }
-
-  if (display.textContent === '0' || justComputed) {
-    updateDisplay(num);
-  } else {
-    updateDisplay(display.textContent + num);
-  }
-  justComputed = false;
+    let current = display.textContent.replace(/\./g, '').replace(',', '.');
+    let next = (current === '0' || justComputed) ? num : current + num;
+    updateDisplay(next);
+    justComputed = false;
 }
 
 function inputDecimal() {
-  if (operator !== null) {
-    if (waitingForSecond) {
-      secondValue = '0.';
-      waitingForSecond = false;
-    } else if (!secondValue.includes('.')) {
-      secondValue = secondValue === '' ? '0.' : secondValue + '.';
+    let current = waitingForSecond ? '0' : (operator !== null ? secondValue : display.textContent.replace(/\./g, '').replace(',', '.'));
+    if (!current.includes('.')) {
+        current = (current === '' ? '0' : current) + '.';
+        if (operator !== null) {
+            secondValue = current;
+            waitingForSecond = false;
+        }
+        updateDisplay(current);
     }
-    updateDisplay(`${formatNum(firstValue)} ${operator} ${secondValue}`);
-    return;
-  }
-
-  if (!display.textContent.includes('.')) {
-    updateDisplay(display.textContent + '.');
-  }
-}
-
-function clearAll() {
-  firstValue = null;
-  operator = null;
-  waitingForSecond = false;
-  secondValue = '';
-  updateDisplay('0');
-}
-
-function backspace() {
-  if (operator !== null && secondValue !== '') {
-    secondValue = secondValue.slice(0, -1);
-    updateDisplay(`${formatNum(firstValue)} ${operator} ${secondValue}`);
-    return;
-  }
-  
-  let text = display.textContent;
-  updateDisplay(text.length <= 1 ? '0' : text.slice(0, -1));
 }
 
 function handleOperator(nextOperator) {
-  if (operator !== null && secondValue !== '') {
-    equals(); // Calcula o anterior antes de seguir
-  }
-  
-  firstValue = parseFloat(display.textContent);
-  operator = nextOperator;
-  waitingForSecond = true;
-  updateDisplay(`${formatNum(firstValue)} ${operator}`);
+    if (operator !== null && secondValue !== '') equals();
+    firstValue = parseFloat(display.textContent.replace(/\./g, '').replace(',', '.').replace('%', ''));
+    operator = nextOperator;
+    waitingForSecond = true;
+}
+
+function handlePercent() {
+    let currentVal = display.textContent.replace(/\./g, '').replace(',', '.');
+    if (currentVal.includes('%') || currentVal === '0') return;
+    updateDisplay(currentVal + '%');
+    if (operator !== null && firstValue !== null) {
+        let percentualRelativo = (firstValue * parseFloat(currentVal)) / 100;
+        secondValue = percentualRelativo.toString();
+    } else {
+        justComputed = true;
+    }
 }
 
 function equals() {
-  if (operator === null) return;
-  
-  const v1 = firstValue;
-  const v2 = secondValue === '' ? v1 : parseFloat(secondValue);
-  
-  const result = compute(v1, v2, operator);
-  updateDisplay(formatNum(result));
-  
-  firstValue = result === 'Erro' ? null : result;
-  operator = null;
-  secondValue = '';
-  waitingForSecond = false;
-  justComputed = true;
+    if (operator === null || waitingForSecond) return;
+    const v1 = firstValue;
+    const v2Text = secondValue === '' ? display.textContent.replace(/\./g, '').replace(',', '.') : secondValue;
+    const v2 = parseFloat(v2Text.replace('%', '')) / (v2Text.includes('%') ? 100 : 1);
+    const result = compute(v1, v2, operator);
+    if (result === 'Erro') {
+        updateDisplay('Erro');
+        setTimeout(clearAll, 1000);
+        return;
+    }
+    const calculation = `${String(v1)} ${operator} ${v2Text} = ${String(result)}`;
+    historyList.push(calculation);
+    updateHistoryUI();
+    updateDisplay(String(result));
+    firstValue = result;
+    operator = null;
+    secondValue = '';
+    justComputed = true;
 }
 
 function compute(a, b, op) {
-  let res;
-  switch (op) {
-    case '+': res = a + b; break;
-    case '-': res = a - b; break;
-    case '×': case '*': res = a * b; break;
-    case '÷': case '/': 
-      if (b === 0) return 'Erro';
-      res = a / b; 
-      break;
-    default: return b;
-  }
-  return res;
+    switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '×': case '*': return a * b;
+        case '÷': case '/': return b === 0 ? 'Erro' : a / b;
+        default: return b;
+    }
 }
 
-// Event Delegation
+function clearAll() {
+    firstValue = null; operator = null; secondValue = '';
+    waitingForSecond = false; historyList = [];
+    updateHistoryUI(); updateDisplay('0');
+}
+
 document.querySelector('.buttons').addEventListener('click', (e) => {
-  const btn = e.target.closest('button');
-  if (!btn) return;
-  
-  const action = btn.dataset.action;
-  const val = btn.textContent.trim();
-
-  switch (action) {
-    case 'number': inputNumber(val); break;
-    case 'operator': handleOperator(val); break;
-    case 'decimal': inputDecimal(); break;
-    case 'equals': equals(); break;
-    case 'clear': clearAll(); break;
-    case 'backspace': backspace(); break;
-  }
-});
-
-// Teclado
-document.addEventListener('keydown', (e) => {
-  if (/[0-9]/.test(e.key)) inputNumber(e.key);
-  if (e.key === '.') inputDecimal();
-  if (e.key === 'Enter' || e.key === '=') equals();
-  if (e.key === 'Backspace') backspace();
-  if (['+', '-', '*', '/'].test(e.key)) {
-    const opMap = {'*': '×', '/': '÷', '+': '+', '-': '-'};
-    handleOperator(opMap[e.key]);
-  }
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const val = btn.textContent.trim();
+    if (action === 'number') inputNumber(val);
+    if (action === 'operator') handleOperator(val);
+    if (action === 'equals') equals();
+    if (action === 'clear') clearAll();
+    if (action === 'percent') handlePercent();
+    if (action === 'decimal') inputDecimal();
+    if (action === 'backspace') {
+        let current = display.textContent.replace(/\./g, '').replace(',', '.');
+        let next = current.length > 1 ? current.slice(0, -1) : '0';
+        if (operator !== null) secondValue = next;
+        updateDisplay(next);
+    }
 });

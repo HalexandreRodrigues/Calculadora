@@ -2,13 +2,14 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora JS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Calculadora Pro</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="calculator">
         <div class="display-wrapper">
+            <div class="history-container" id="history-container"></div>
             <div class="display" id="display">0</div>
             <div class="feature-indicator" id="feature-indicator" aria-hidden="true"></div>
         </div>
@@ -16,7 +17,7 @@
         <div class="buttons">
             <button class="btn" data-action="clear">C</button>
             <button class="btn" data-action="percent">%</button>
-            <button class="btn" data-action="backspace" aria-label="Apagar">←</button>
+            <button class="btn" data-action="backspace">←</button>
             <button class="btn" data-action="operator" data-value="/">÷</button>
             
             <button class="btn" data-action="number">7</button>

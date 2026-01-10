@@ -1,4 +1,3 @@
-/* Layout geral */
 * , *::before, *::after { 
     box-sizing: border-box; 
 }
@@ -8,129 +7,92 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100vw;
     margin: 0;
-    background: #000;
+    background: #ffffff; 
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
 } 
 
-/* Caixa da calculadora */
 .calculator {
-    width: 280px;
-    max-width: 92vw;
+    width: 100vw;
+    height: 100vh;
     background: linear-gradient(180deg, #ffffff 0%, #f1f1f1 100%);
-    border-radius: 14px;
-    padding: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    padding: 20px;
     display: flex;
     flex-direction: column;
 }
 
-/* Visor */
 .display-wrapper { 
     display: flex; 
     flex-direction: column; 
-    gap: 6px; 
+    flex: 1;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.history-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    min-height: 140px; /* Espaço para as 6 linhas */
+    gap: 2px;
+    padding-right: 10px;
+}
+
+.history-item {
+    font-size: 1rem;
+    color: #000;
+    opacity: 0.3; /* Opacidade reduzida conforme solicitado */
+    white-space: nowrap;
 }
 
 .display {
-    position: relative;
-    background: #afafaf;
+    background: #efefef;
     color: #000000;
-    font-size: 1.8rem; /* Aumentado para melhor leitura */
-    padding: 12px;
+    font-size: 3.5rem;
+    padding: 15px;
     text-align: right;
-    border-radius: 10px;
-    min-height: 60px;
+    border-radius: 15px;
+    min-height: 90px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    letter-spacing: 0.3px;
     width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: clip;
 }
 
-.feature-indicator {
-    height: 18px;
-    font-size: 0.72rem;
-    color: #bfbfbf;
-    text-align: right;
-    padding-right: 6px;
-    display: none;
-}
+/* Ocultar "Claude Haiku 4.5: ON" */
+#feature-indicator { display: none !important; }
 
-.feature-indicator.on { color: #e91e63; font-weight: 700; }
-
-/* Fade indicador à esquerda quando houver overflow */
-.display::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    pointer-events: none;
-    background: linear-gradient(90deg, #1f1f1f 0%, rgba(31,31,31,0) 100%);
-    opacity: 0;
-    transition: opacity .18s ease;
-    z-index: 2;
-}
-
-.display.has-overflow::before { opacity: 1; } 
-
-/* Grade de botões */
 .buttons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 10px;
+    gap: 12px;
+    flex: 2;
 }
 
 .btn {
     background: #2f2f2f;
     color: #ffffff;
     border: none;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    font-size: 1.1rem;
+    border-radius: 20px;
+    font-size: 1.8rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    height: 100%;
 }
 
-.btn:hover { background: #3f3f3f; }
-.btn:active { transform: scale(0.95); }
-
-/* Operadores e Igual */
-.btn[data-action="operator"], .btn.equal {
-    background: #e91e63;
-    color: #fff;
-    font-size: 1.4rem;
-}
-
-.btn[data-action="operator"]:hover, .btn.equal:hover {
-    background: #d81b60;
-}
-
-/* Botões utilitários (Topo) */
-.btn[data-action="clear"], 
-.btn[data-action="backspace"], 
-.btn[data-action="percent"] {
-    background: #a5a5a5;
+.btn[data-action="operator"], .btn.equal { background: #e91e63; }
+.btn[data-action="clear"], .btn[data-action="backspace"], .btn[data-action="percent"] {
+    background: #d4d4d4;
     color: #000;
 }
 
-.btn[data-action="clear"]:hover { background: #d4d4d4; }
-
-/* Botão zero (Pílula) */
 .btn.zero {
     grid-column: span 2;
-    aspect-ratio: auto; /* Remove o 1/1 para permitir o span */
-    border-radius: 40px;
-    padding-left: 20px;
     justify-content: flex-start;
+    padding-left: 35px;
 }
