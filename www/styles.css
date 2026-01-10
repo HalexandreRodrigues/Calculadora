@@ -44,7 +44,7 @@ body {
 .history-item {
     font-size: 1rem;
     color: #000;
-    opacity: 0.3; /* Opacidade reduzida conforme solicitado */
+    opacity: 0.3; /* Opacidade reduzida*/
     white-space: nowrap;
 }
 
@@ -62,7 +62,6 @@ body {
     width: 100%;
 }
 
-/* Ocultar "Claude Haiku 4.5: ON" */
 #feature-indicator { display: none !important; }
 
 .buttons {
