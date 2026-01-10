@@ -1,6 +1,6 @@
 # Calculadora
 
-Projeto simples de uma calculadora.
+Projeto de uma calculadora cientifica basica.
 
 ## Feature flags
 
