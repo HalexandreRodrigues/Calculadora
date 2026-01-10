@@ -19,7 +19,6 @@ function formatVisual(numStr) {
     return hasPercent ? result + '%' : result;
 }
 
-// Substitua a função updateDisplay antiga por esta:
 function updateDisplay(text) {
     display.textContent = formatVisual(String(text));
     adjustFontSize(); // Chama o ajuste de tamanho toda vez que o visor muda
@@ -60,21 +59,50 @@ function updateHistoryUI() {
     });
 }
 
+// Substitua a função inputNumber inteira por esta:
 function inputNumber(num) {
+    // 1. LIMITE DE SEGURANÇA: Se já tem 18 caracteres (contando pontos), não deixa digitar mais
+    if (display.textContent.length >= 18 && operator === null && !waitingForSecond) {
+        return; 
+    }
+
     if (operator !== null) {
         if (waitingForSecond) {
             secondValue = num;
             waitingForSecond = false;
         } else {
+            // Limite também para o segundo número da conta
+            if (secondValue.length >= 18) return; 
             secondValue = (secondValue === '0') ? num : secondValue + num;
         }
         updateDisplay(secondValue);
         return;
     }
+    
     let current = display.textContent.replace(/\./g, '').replace(',', '.');
     let next = (current === '0' || justComputed) ? num : current + num;
     updateDisplay(next);
     justComputed = false;
+}
+
+function adjustFontSize() {
+    const length = display.textContent.length;
+    let newSize = '3.5rem';
+
+    if (length > 7) {
+        newSize = '3.0rem';
+    }
+    if (length > 9) {
+        newSize = '2.5rem';
+    }
+    if (length > 11) {
+        newSize = '2.0rem';
+    }
+    if (length > 14) {
+        newSize = '1.5rem';
+    }
+
+    display.style.fontSize = newSize;
 }
 
 function inputDecimal() {

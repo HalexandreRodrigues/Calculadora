@@ -51,17 +51,19 @@ body {
 .display {
     background: #efefef;
     color: #000000;
-    font-size: 3.5rem; /* Tamanho inicial */
+    font-size: 3.5rem;
     padding: 15px;
-    text-align: right;
+    text-align: right; /* Alinha os números à direita */
     border-radius: 15px;
     min-height: 90px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 100%;
-    white-space: nowrap; /* Obriga o texto a ficar em uma linha só */
-    overflow: hidden;    /* Corta o excesso se passar do limite */
+    
+    white-space: nowrap;  
+    overflow: hidden;      
+    text-overflow: clip;   
 }
 
 #feature-indicator { display: none !important; }
