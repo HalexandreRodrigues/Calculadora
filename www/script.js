@@ -19,8 +19,32 @@ function formatVisual(numStr) {
     return hasPercent ? result + '%' : result;
 }
 
+// Substitua a função updateDisplay antiga por esta:
 function updateDisplay(text) {
     display.textContent = formatVisual(String(text));
+    adjustFontSize(); // Chama o ajuste de tamanho toda vez que o visor muda
+}
+function adjustFontSize() {
+    const length = display.textContent.length;
+    
+    // Tamanho padrão
+    let newSize = '3.5rem';
+
+    // Se o número for muito longo, diminui a fonte progressivamente
+    if (length > 9) {
+        newSize = '2.8rem';
+    }
+    if (length > 12) {
+        newSize = '2.2rem';
+    }
+    if (length > 15) {
+        newSize = '1.7rem';
+    }
+    if (length > 18) {
+        newSize = '1.3rem';
+    }
+
+    display.style.fontSize = newSize;
 }
 
 function updateHistoryUI() {
